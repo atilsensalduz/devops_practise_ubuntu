@@ -25,7 +25,7 @@
 
 
     - name: "Install requiered packages"
-      yum:
+      apt:
         name:
           - wget 
           - unzip

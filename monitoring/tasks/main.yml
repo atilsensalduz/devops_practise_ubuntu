@@ -2,6 +2,10 @@
   - name: "Install Prometheus Server with Ansible"
     hosts: localhost
     connection: local
+    - name: prometheus_ingress_url
+      prompt: "What is your prometheus external url?"
+      private: no
+
     tasks:
 
     - name: "Create the Monitoring Namespace"
@@ -30,6 +34,12 @@
 
     - name: "Create a deployment for prometheus"
       command: "kubectl apply -f /workspace/roles/monitoring/templates/prometheus-deployment.yml"
+
+    - name: "generate prometheus-ingress.yaml for ingress url"
+      template:
+        src: /workspace/roles/monitoring/templates/prometheus-ingress.yaml.j2
+        dest: /workspace/roles/monitoring/templates/prometheus-ingress.yaml
+
   
     - name: "Create a ingres resouce for prometheus"
       command: "kubectl apply -f /workspace/roles/monitoring/templates/prometheus-ingress.yaml"

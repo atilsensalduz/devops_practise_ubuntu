@@ -1,0 +1,82 @@
+---
+  - name: "Install ElasticSearch with Ansible"
+    hosts: all
+
+    tasks:
+    - name: "update elastic server hostnames"
+      hostname:
+        name: "{{ elastic_hostname }}"
+
+    - name: check connection
+      ping:
+    
+    - name: setup
+      setup:
+  
+    - name: "Build hosts file"
+      lineinfile: 
+        dest: /etc/hosts
+        state: present
+        dest: /etc/hosts
+        regexp: '.*{{ item }}$' 
+        line: "{{ hostvars[item].ansible_default_ipv4.address }} {{hostvars[item].ansible_hostname}}"
+      when: hostvars[item].ansible_default_ipv4.address is defined
+      with_items: "{{ groups['all'] }}"
+
+
+    - name: "Install requiered packages"
+      apt:
+        name:
+          - wget 
+          - unzip
+          - java
+          - apt-transport-https
+        state: present
+
+    - name: "add an apt signig key elastic"
+      apt_key:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+
+    - name: "copy elastic repo file"
+      copy: 
+        src: /workspace/roles/logging/templates/elastic-7.x.list
+        dest: /etc/apt/sources.list.d/elastic-7.x.list
+
+    - name: "install elasticsearch"
+      apt:
+        name: elasticsearch
+        state: present
+
+    - name: "generate elastic.yml template"
+      template:
+        src: /workspace/roles/logging/templates/elasticsearch.yml.j2
+        dest: /etc/elasticsearch/elasticsearch.yml
+        group: elasticsearch
+
+
+    - name: "elasticsearch service start and enable"
+      systemd:
+        name: elasticsearch
+        state: started
+        enabled: True
+
+
+    - name: "install kibnaa"
+      apt:
+        name: kibana
+        state: present
+
+
+    - name: "generate elastic.yml template"
+      template:
+        src: /workspace/roles/logging/templates/kibana.yml.j2
+        dest: /etc/kibana/kibana.yml
+        group: kibana
+
+    - name: "kibana service start and enable"
+      systemd:
+        name: kibana
+        state: started
+        enabled: True
+  

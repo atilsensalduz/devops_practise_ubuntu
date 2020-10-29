@@ -1,6 +1,6 @@
 ---
   - name: "Install Consul with Ansible"
-    hosts: consul_servers
+    hosts: localhost
     connection: local
     vars_prompt:
 

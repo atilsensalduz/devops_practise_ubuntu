@@ -1,20 +1,40 @@
 ---
-  - name: "Install Prometheus Server with Ansible"
+  - name: "Install Grafana with Ansible in K8s"
     hosts: localhost
     connection: local
+    vars_prompt:
+
+    - name: prometheus_ip
+      prompt: "What is your datasource prometheus ip?"
+      private: no
+
+    - name: grafana_ingress_url
+      prompt: "What is your grafana external url?"
+      private: no
+
     tasks:
 
-    - name: "Create the Monitoring Namespace"
-      command: "kubectl apply -f /workspace/roles/monitoring/templates/prometheus-ns.yml"
+    - name: "generate  grafana-datasource-config.yaml with datasource prometheus ip"
+      template:
+        src: /workspace/roles/grafana/templates/grafana-datasource-config.yaml.j2
+        dest: /workspace/roles/grafana/templates/grafana-datasource-config.yaml
 
-    - name: "Create a clusterrole binding and rbac"
-      command: "kubectl apply -f /workspace/roles/monitoring/templates/clusterrole.yml"
+    - name: "Create a datasource configmap for grafana"
+      command: "kubectl apply -f /workspace/roles/grafana/templates/grafana-datasource-config.yaml"
 
-    - name: "Create a ConfigMap for prometheus"
-      command: "kubectl apply -f /workspace/roles/monitoring/templates/prometheus-configmap.yml"
-
-    - name: "Create a deployment for prometheus"
-      command: "kubectl apply -f /workspace/roles/monitoring/templates/prometheus-deployment.yml"
   
-    - name: "Create a ingres resouce for prometheus"
-      command: "kubectl apply -f /workspace/roles/monitoring/templates/prometheus-ingress.yaml"
+    - name: "Create a deployment for grafana"
+      command: "kubectl apply -f /workspace/roles/grafana/templates/grafana-deployment.yaml"
+
+    - name: "Create a service for grafana"
+      command: "kubectl apply -f /workspace/roles/grafana/templates/grafana-service.yaml"
+
+    - name: "generate grafana-ingress.yaml with datasource prometheus ip"
+      template:
+        src: /workspace/roles/grafana/templates/grafana-ingress.yaml.j2
+        dest: /workspace/roles/grafana/templates/grafana-ingress.yaml
+
+    - name: "Create a ingress for grafana"
+      command: "kubectl apply -f /workspace/roles/grafana/templates/grafana-ingress.yaml.j2"
+
+

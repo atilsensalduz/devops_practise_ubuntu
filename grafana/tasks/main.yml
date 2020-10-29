@@ -35,6 +35,4 @@
         dest: /workspace/roles/grafana/templates/grafana-ingress.yaml
 
     - name: "Create a ingress for grafana"
-      command: "kubectl apply -f /workspace/roles/grafana/templates/grafana-ingress.yaml.j2"
-
-
+      command: "kubectl apply -f /workspace/roles/grafana/templates/grafana-ingress.yaml"

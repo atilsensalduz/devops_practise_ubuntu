@@ -62,6 +62,7 @@
         src: "{{ item }}"
         dest: /usr/local/bin
         mode: u=rwx,g=rx,o=rx
+        remote_src: yes
       with_items:
         - /tmp/prometheus-{{prometheusversion}}.linux-amd64/prometheus
         - /tmp/prometheus-{{prometheusversion}}.linux-amd64/promtool

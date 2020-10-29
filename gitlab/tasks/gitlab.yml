@@ -22,9 +22,12 @@
       when: hostvars[item].ansible_default_ipv4.address is defined
       with_items: "{{ groups['all'] }}"
 
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
 
     - name: "Install requiered packages"
-      yum:
+      apt:
         name:
           - wget 
           - unzip

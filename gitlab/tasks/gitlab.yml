@@ -37,15 +37,15 @@
 
     - name: "download gitlab repo script"
       get_url: 
-        url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh
+        url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh
         dest: /tmp/
         mode: "u=rwx,g=rx,o=rx"
 
     - name: "run gitlab repo script"
-      shell: /bin/bash /tmp/script.rpm.sh
+      shell: /bin/bash /tmp/script.deb.sh
   
     - name: "Install Gitlab Packages"
-      yum:
+      apt:
         name: gitlab-ce
         state: present
  
@@ -71,9 +71,7 @@
         create_home: yes
 
     - name: "run gitlab-runner installation"
-      shell: gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+      shell: " /usr/local/bin/gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner"
 
     - name: "run gitlab-runner start"
-      shell: gitlab-runner start
-
-        
+      command: "/usr/local/bin/gitlab-runner start"     
